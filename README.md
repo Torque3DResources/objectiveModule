@@ -5,9 +5,9 @@ A module for the Torque3D Game Engine that implements an objectives tracking sys
 ## Expected Knowledge
 
 ### General background
-https://en.wikipedia.org/wiki/Namespace
-https://en.wikipedia.org/wiki/Callback_(computer_programming)
-https://en.wikipedia.org/wiki/Finite-state_machine
+- https://en.wikipedia.org/wiki/Namespace
+- https://en.wikipedia.org/wiki/Callback_(computer_programming)
+- https://en.wikipedia.org/wiki/Finite-state_machine
 
 ### T3D specific 
 (todo: change the below to https://docs.torque3d.org/general/readme links)
