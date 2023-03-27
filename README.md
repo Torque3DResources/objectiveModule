@@ -36,10 +36,12 @@ SimObject.getFieldValue(%fieldName, %index )
 > return: The value of the given field or "" if undefined.
    
 ## Namespaces, inheritance, and callbacks
-T3D uses a unique, flexible namespace archetecture for scripting using the following precidence rules
-First, it looks for a specific objectName::callback
-Second it will attempt to find an %object.class callback
-Third it will attempt to find an %object.superClass callback
+T3D uses a unique, flexible namespace archetecture for scripting using the following precidence rules:
+
+- First, it looks for a specific objectName::callback
+- Second it will attempt to find an %object.class callback
+- Third it will attempt to find an %object.superClass callback
+
 Failing that it will attempt to go through the source inheritance chain to find a more general namespace method definition
 
 # Classes
