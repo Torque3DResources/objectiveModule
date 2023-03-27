@@ -1,0 +1,69 @@
+//==============================================================================
+// This file has functions for integrating back against file save and IO systems
+// This way, the game can save objectives progress, ensuring that resuming the game
+// later will initialize the objective state back to where it was at-save
+//==============================================================================
+function ObjectiveModule::insertSaveData(%this)
+{
+    $saveRecord.add("<Objective>","");
+    %count = %this.Objectives.count();
+    if (%count<1) $saveRecord.add("","");
+    for (%i=0;%i<%count;%i++)
+    {
+        %Objective = %this.Objectives.getKey(%i);
+        %status = %this.Objectives.getValue(%i);
+        $saveRecord.add(%Objective,%status);
+    }
+}
+
+function ObjectiveModule::parseSaveData(%this)
+{
+    %this.Objectives.empty();
+    %count = $saveRecord.count();
+    %foundStart = false;
+    %curModule = "";
+    for (%i=0;%i<%count;%i++)
+    {
+        %temp = $saveRecord.getKey(%i);
+        if (strchrpos(getword(%temp,0),"<")>-1)
+        {
+            %curModule = stripChars(%temp,"< >");
+            %i++;//skip module divide entries
+        }
+        if (%curModule $= "Objective")
+        {
+            %Objective = $saveRecord.getKey(%i);
+            %status = $saveRecord.getValue(%i);
+            %this.Objectives.add(%Objective,%status);
+        }
+    }
+}
+
+function ObjectiveModule::onSaveLoaded(%this)
+{
+    %count = %this.Objectives.count();
+    
+    if (%count == 0)
+        %this.initState();
+        
+    %onObjectiveID = 0;
+    for (%i=0;%i<%count;%i++)
+    {
+        %ObjectiveTag = %this.Objectives.getKey(%i);
+        %ObjectiveStatus = %this.Objectives.getValue(%i);
+        switch$(%ObjectiveStatus)
+        {
+            case "active":
+                %onObjectiveID = %i;
+            case "pause":
+                doObjectiveCallback(%ObjectiveTag,Resume);
+            case "complete":
+                doObjectiveCallback(%ObjectiveTag,Complete);
+            case "failed":
+                doObjectiveCallback(%ObjectiveTag,Failed);                    
+            default:
+                error("unrecognized Objective status for:" @ %ObjectiveTag);
+        }
+    }
+    resumeObjective(%this.Objectives.getKey(%onObjectiveID));
+}

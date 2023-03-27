@@ -1,0 +1,16 @@
+<ModuleDefinition
+    canSave="true"
+    canSaveDynamicFields="true"
+    ModuleId="ObjectiveModule"
+    VersionId="1"
+    Group="Game"
+    scriptFile="ObjectiveModule"
+    CreateFunction="onCreate"
+    DestroyFunction="onDestroy"
+    Dependencies="InventorySystem=1">
+    <DeclaredAssets
+        canSave="true"
+        canSaveDynamicFields="true"
+        Extension="asset.taml"
+        Recurse="true" />
+</ModuleDefinition>

@@ -1,0 +1,135 @@
+//--- OBJECT WRITE BEGIN ---
+$guiContent = new GuiControl(ObjectiveEditorGui) {
+   extent = "1024 768";
+   profile = "ToolsGuiDefaultNonModalProfile";
+   tooltipProfile = "GuiToolTipProfile";
+   isContainer = "1";
+   canSaveDynamicFields = "1";
+      originalAssetName = "ObjectiveEditorGui";
+      persistenceMgr = "22224";
+
+   new GuiWindowCtrl() {
+      text = "Objective Editor";
+      closeCommand = "ObjectiveEditorGui.close();";
+      position = "114 90";
+      extent = "796 588";
+      horizSizing = "center";
+      vertSizing = "center";
+      profile = "ToolsGuiWindowProfile";
+      tooltipProfile = "GuiToolTipProfile";
+      internalName = "window";
+
+      new GuiFrameSetCtrl() {
+         columns = "0 300";
+         borderColor = "32 31 31 255";
+         position = "0 20";
+         extent = "796 541";
+         horizSizing = "width";
+         profile = "GuiFrameSetProfile";
+         tooltipProfile = "GuiToolTipProfile";
+
+         new GuiPanel() {
+            extent = "296 541";
+            profile = "ToolsGuiDefaultProfile";
+            tooltipProfile = "GuiToolTipProfile";
+
+            new GuiIconButtonCtrl() {
+               BitmapAsset = "ToolsModule:iconAdd_image";
+               textLocation = "Center";
+               text = "New Objective";
+               position = "76 0";
+               extent = "110 28";
+               profile = "ToolsGuiButtonProfile";
+               command = "ObjectiveEditorGui.newObjective();";
+               tooltipProfile = "GuiToolTipProfile";
+               internalName = "NewObjectiveBtn";
+            };
+            new GuiIconButtonCtrl() {
+               BitmapAsset = "ToolsModule:iconCancel_image";
+               textLocation = "Center";
+               text = "Delete Objective";
+               position = "186 0";
+               extent = "110 28";
+               profile = "ToolsGuiButtonProfile";
+               command = "ObjectiveEditorGui.deleteObjective();";
+               tooltipProfile = "GuiToolTipProfile";
+               internalName = "DeleteObjectiveBtn";
+            };
+            new GuiScrollCtrl() {
+               hScrollBar = "dynamic";
+               vScrollBar = "dynamic";
+               position = "0 28";
+               extent = "296 513";
+               horizSizing = "width";
+               vertSizing = "height";
+               profile = "ToolsGuiScrollProfile";
+               tooltipProfile = "GuiToolTipProfile";
+
+               new GuiTextListCtrl() {
+                  position = "1 1";
+                  extent = "294 80";
+                  horizSizing = "width";
+                  profile = "ToolsGuiMLTextProfile";
+                  tooltipProfile = "GuiToolTipProfile";
+                  internalName = "objectiveList";
+                  class = "ObjectiveEditorObjectiveList";
+               };
+            };
+         };
+         new GuiPanel() {
+            position = "300 0";
+            extent = "496 541";
+            profile = "ToolsGuiDefaultProfile";
+            tooltipProfile = "GuiToolTipProfile";
+
+            new GuiScrollCtrl() {
+               hScrollBar = "dynamic";
+               vScrollBar = "dynamic";
+               extent = "496 496";
+               horizSizing = "width";
+               profile = "ToolsGuiScrollProfile";
+               tooltipProfile = "GuiToolTipProfile";
+
+               new GuiInspector() {
+                  position = "1 1";
+                  extent = "479 492";
+                  horizSizing = "width";
+                  vertSizing = "height";
+                  profile = "GuiInspectorProfile";
+                  tooltipProfile = "GuiToolTipProfile";
+                  class = "ObjectiveEditorInspector";
+                  internalName = "ObjectiveInspector";
+               };
+            };
+            new GuiMLTextCtrl() {
+               position = "3 501";
+               extent = "494 14";
+               horizSizing = "width";
+               vertSizing = "top";
+               profile = "GuiMLTextProfile";
+               tooltipProfile = "GuiToolTipProfile";
+               internalName = "FieldInfoCtrl";
+            };
+         };
+      };
+      new GuiButtonCtrl() {
+         text = "Save";
+         position = "612 558";
+         extent = "86 29";
+         profile = "ToolsGuiButtonProfile";
+         command = "ObjectiveEditorGui.promptSave();";
+         tooltipProfile = "GuiToolTipProfile";
+         internalName = "SaveObjectiveBtn";
+      };
+      new GuiButtonCtrl() {
+         text = "Cancel";
+         position = "706 558";
+         extent = "86 29";
+         profile = "ToolsGuiButtonProfile";
+         command = "ObjectiveEditorGui.close();";
+         tooltipProfile = "GuiToolTipProfile";
+         internalName = "CloseObjectiveEditorBtn";
+      };
+   };
+};
+//--- OBJECT WRITE END ---

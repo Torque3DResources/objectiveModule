@@ -1,0 +1,5 @@
+<GUIAsset
+    AssetName="ObjectiveEditorGui"
+    scriptFile="@assetFile=ObjectiveEditorGui.tscript"
+    GUIFile="@assetFile=ObjectiveEditorGui.gui"
+    VersionId="1"/>

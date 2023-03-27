@@ -1,0 +1,15 @@
+//A callback function that is invoked when the PlayGUI is awoken for normal gameplay
+//This lets us automatically add the objectiveTrackerGUI to it
+function objectiveModule::Playgui_onWake()
+{
+    Canvas.pushDialog(objectiveTrackerGUI);
+}
+
+//Invoked when the status of quests is changed, ensures all our UIs are brought
+//up to date. We only have the tracker here, but this could also update a 
+//full quest log or other longer-form primary menus
+function ClientobjectiveList::refresh()
+{
+   //tracker's been told there's been updates, so ensure our GUIs are made to be up to date as well
+   objectiveTrackerGUI.refresh();
+}

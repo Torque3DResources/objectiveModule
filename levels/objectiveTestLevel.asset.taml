@@ -1,0 +1,10 @@
+<LevelAsset
+    AssetName="objectiveTestLevel"
+    LevelFile="@assetFile=objectiveTestLevel.mis"
+    LevelName="objective Tests"
+    PostFXPresetFile="@assetFile=objectiveTestLevel.postfxpreset.tscript"
+    DecalsFile="@assetFile=objectiveTestLevel.mis.decals"
+    ForestFile="@assetFile=objectiveTestLevel.forest"
+    NavmeshFile="@assetFile=objectiveTestLevel.nav"
+    staticObjectAssetDependency0="@asset=Prototyping:FloorGray"
+    VersionId="1"/>

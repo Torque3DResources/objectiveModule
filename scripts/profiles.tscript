@@ -1,0 +1,16 @@
+if( !isObject( GuiMLObjectiveProfile ) )
+new GuiControlProfile( GuiMLObjectiveProfile )
+{
+   fontColor = $TextMediumEmphasisColor;
+   fontColorHL = $TextMediumEmphasisColor;
+   fontColorSEL = $TextMediumEmphasisColor;
+   fontColorNA = $TextDisabledColor;
+   
+   fontColorLink = "100 100 100";
+   fontColorLinkHL = $TextMediumEmphasisColor;
+   autoSizeWidth = true;
+   autoSizeHeight = true;  
+   border = false;
+   fontSize = 24;
+   category = "Core";
+};

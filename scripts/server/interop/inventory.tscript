@@ -1,0 +1,38 @@
+//==============================================================================
+// This file has functions for integrating back against an inventory system
+// This is useful for objectives as it allows the objective system to respond to 
+// inventory changes. If an objective requires collecting X of Y items, this simplifies
+// the handling of that logic, as the objective system can just respond to callback
+// events when a player's inventory changes without a lot of game logic code 
+// expressly integrating them together
+//==============================================================================
+function ObjectiveModule::onSetInventory(%this, %playerInst, %itemData, %currentAmount)
+{
+    %count = %this.Objectives.count();
+    for (%i=0; %i<%count; %i++)
+    {
+        %ObjectiveTag = %this.Objectives.getKey(%i);
+        if (%ObjectiveTag.collectionItem $= %itemData.getName())
+        {
+            %idx = %this.items.getIndexFromKey(%itemData.getName());
+            if (%idx != -1)
+                %this.items.setValue(%currentAmount, %idx);
+            else
+                %this.items.add(%itemData.getName(),%currentAmount);
+                
+	         for (%clientIndex = 0; %clientIndex < ClientGroup.getCount(); %clientIndex++)
+	         {
+		         %cl = ClientGroup.getObject(%clientIndex);
+               updateObjectiveForClient(%cl);
+            }
+            
+            if (%currentAmount >= %ObjectiveTag.collectionCount)
+                completeObjective(%ObjectiveTag);
+        }
+    }
+}
+
+function ObjectiveModule::onClearInventory(%this,%playerInst)
+{
+    %this.items.empty();
+}

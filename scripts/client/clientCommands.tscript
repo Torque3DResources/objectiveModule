@@ -1,0 +1,63 @@
+//Tells the server to send status updates to the client
+function requestObjectives(%includeComplete)
+{    
+    commandtoserver('getObjective',%includeComplete);
+}
+
+//When activated it tells the server to cycle the active objective iteratively
+function cycleObjective(%val)
+{   
+   if (!%val)
+      commandtoserver('cycleObjective');
+}
+
+//This function will read a file and parse it for the extended
+//description or other possible metadata info for a given objective
+//mostly intended for longer-form quest descriptions like in a 
+//quest log
+function ObjectiveModule::openObjectiveFile(%this, %filename)
+{
+	%file = new FileObject();
+	if(%file.openForRead(%filename))
+	{
+      %objectiveDisplayName = %file.readLine();
+      %description = %file.readLine();
+      //TODO: This currently just dumps to console. Would need actual returns/integrations
+      //for the readout of the extended desc file to be useful. Likely just an
+      //exercise for the user
+      warn(%objectiveDisplayName @"\n"@ %description);
+	}
+   else
+   {
+      error("could not open "@ %filename @ "!");
+   }
+}
+
+//Informs the server we want to track a specific objective
+function setActiveObjective(%this)
+{
+   %rowIdx = objectiveList.getSelectedRow();
+   %rowLabel = objectiveList.getRowLabel(%rowIdx);
+   
+   commandToServer('trackObjective', %rowLabel);
+}
+
+//Command from the server to clear objectives list
+//Usually done before status updates are sent down from the server
+function clientCMDclearObjectiveTracker()
+{
+    ClientObjectiveList.empty();
+    ClientObjectiveList.refresh();
+}
+
+//Adds an objective and it's info to the objective list so we can track on the client
+//Coming from the server ensures that all clients are 'on the same page' far as the status
+//of objectives, ensuring multiplayer stability
+function clientCMDappendObjectiveTracker(%objectiveName, %description, %status, %extendedDescFile)
+{
+   ClientObjectiveList.add(%objectiveName, %status TAB %description TAB %extendedDescFile);
+
+   //now that we have a sttaus update for the objectives on the tracker,
+   //inform our GUIs to update display
+   ClientObjectiveList.refresh();
+}

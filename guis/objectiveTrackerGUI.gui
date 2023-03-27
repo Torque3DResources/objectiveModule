@@ -1,0 +1,57 @@
+//--- OBJECT WRITE BEGIN ---
+$guiContent = new GuiControl(ObjectiveTrackerGUI) {
+   extent = "1024 768";
+   profile = "GuiModelessDialogProfile";
+   tooltipProfile = "GuiToolTipProfile";
+   isContainer = "1";
+   canSaveDynamicFields = "1";
+      noCursor = "1";
+
+   new GuiContainer(ObjectiveTrackerListContainer) {
+      position = "0 200";
+      extent = "318 101";
+      profile = "GuiDefaultProfile";
+      tooltipProfile = "GuiToolTipProfile";
+
+      new GuiBitmapCtrl() {
+         BitmapAsset = "UI:hudfill_image";
+         extent = "318 101";
+         horizSizing = "width";
+         vertSizing = "height";
+         profile = "GuiDefaultProfile";
+         tooltipProfile = "GuiToolTipProfile";
+      };
+      new GuiMLTextCtrl(ObjectiveListText) {
+         allowColorChars = "1";
+         extent = "318 120";
+         profile = "GuiMLObjectiveProfile";
+         tooltipProfile = "GuiToolTipProfile";
+      };
+   };
+   new GuiContainer(ObjectiveTrackerTimerContainer) {
+      position = "320 200";
+      extent = "97 34";
+      profile = "GuiDefaultProfile";
+      tooltipProfile = "GuiToolTipProfile";
+      visible = "0";
+
+      new GuiBitmapCtrl() {
+         BitmapAsset = "UI:hudfill_image";
+         color = "255 255 255 255";
+         extent = "97 34";
+         horizSizing = "width";
+         vertSizing = "height";
+         profile = "GuiDefaultProfile";
+         tooltipProfile = "GuiToolTipProfile";
+      };
+      new GuiClockHud(guiObjectiveClock) {
+         fillColor = "0.992157 0.992157 0.992157 0";
+         frameColor = "0.004 0.004 0.004 0";
+         textColor = "0.991102 0.982251 0.982251 1";
+         extent = "97 34";
+         profile = "GuiMLObjectiveProfile";
+         tooltipProfile = "GuiToolTipProfile";
+      };
+   };
+};
+//--- OBJECT WRITE END ---

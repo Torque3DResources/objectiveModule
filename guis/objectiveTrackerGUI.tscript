@@ -1,0 +1,49 @@
+function ObjectiveTrackerGUI::onWake(%this)
+{   
+    //requestObjectives();
+}
+
+function clientCMDupdateObjectiveClock(%time)
+{
+    if (%time>0)
+    {
+        ObjectiveTrackerTimerContainer.setVisible(true);
+        guiObjectiveClock.setReverseTime(%time);
+    }
+    else    
+        ObjectiveTrackerTimerContainer.setVisible(false);
+}
+
+function ObjectiveTrackerGUI::refresh(%this)
+{
+   ObjectiveListText.setText("");
+
+   %ObjectiveTrackerText = "";
+   for(%i=0; %i < ClientObjectiveList.count(); %i++)
+   {
+      %ObjectiveName = ClientObjectiveList.getKey(%i);
+      %ObjectiveData = ClientObjectiveList.getValue(%i);
+      
+      %ObjectiveStatus = getField(%ObjectiveData, 0);
+      %ObjectiveDescription = getField(%ObjectiveData, 1);
+      %ObjectiveExtendedDescFile = getField(%ObjectiveData, 2);
+      
+      if (detag(%ObjectiveStatus) $= "complete")
+            continue;
+            
+      //We'll color code the text on the tracker by the quest's status so it's
+      //easier to see at a glance where everything is at
+      %colorcode = "<color:0000FF>";
+
+      if (detag(%ObjectiveStatus) $= "active")
+         %colorcode = "<color:00FF00>";
+      if (detag(%ObjectiveStatus) $= "failed")
+         %colorcode = "<color:FF0000>";
+      
+      //append each quest's description and a new line so it formats correctly for display
+      %ObjectiveTrackerText = %ObjectiveTrackerText @ %colorcode @ %ObjectiveDescription @"\n";
+   }
+   
+   ObjectiveListText.setText(%ObjectiveTrackerText);
+   ObjectiveListText.forceReflow();
+}

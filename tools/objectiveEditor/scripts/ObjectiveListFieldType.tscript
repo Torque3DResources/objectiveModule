@@ -1,0 +1,168 @@
+//This is called by the inspectorgroup itself. Since ObjectiveList is an unknown type in the engine, it calls down to the script via programmatic formatting on the call
+//as build<customFieldType>Field()
+//Landing here. That allows us to build out a completely custom field type for the objective editor. In this case, listing existing Objectives
+function GuiInspectorGroup::buildObjectiveListField(%this, %fieldName, %fieldLabel, %fieldDesc, %fieldDefaultVal, %fieldDataVals, %callbackName, %ownerObj)
+{
+   %extent = 200;
+   
+   %fieldCtrl = %this.createInspectorField();
+   
+   %extent = %this.stack.getExtent();
+   
+   %width = mRound(%extent/2);
+   %height = 20;
+   %inset = 10;
+   
+   //The field is presented as a dropdown menu
+   %editControl = new GuiPopUpMenuCtrl() {
+      class = "GuiInspectorObjectiveListField";
+      maxPopupHeight = "200";
+      sbUsesNAColor = "0";
+      reverseTextList = "0";
+      bitmapBounds = "16 16";
+      maxLength = "1024";
+      Margin = "0 0 0 0";
+      Padding = "0 0 0 0";
+      AnchorTop = "1";
+      AnchorBottom = "0";
+      AnchorLeft = "1";
+      AnchorRight = "0";
+      isContainer = "0";
+      Profile = "ToolsGuiPopUpMenuProfile";
+      HorizSizing = "right";
+      VertSizing = "bottom";
+      Position = %fieldCtrl.edit.position;
+      Extent = %fieldCtrl.edit.extent;
+      MinExtent = "8 2";
+      canSave = "1";
+      Visible = "1";
+      tooltipprofile = "ToolsGuiToolTipProfile";
+      tooltip = ""; //%tooltip;
+      text = %fieldDefaultVal;
+      hovertime = "1000";
+      ownerObject = %ownerObj;
+      fieldName = %fieldName;
+      callbackName = %callbackName;
+   };
+   
+   //If this is a global variable, set the text appropriately
+   if(getSubStr(%this.fieldName, 0, 1) $= "$")
+   {
+      if(%fieldName $= "")
+         %editControl.setText(%fieldName);
+   }
+   else if(isObject(%ownerObj))
+   {
+      //We have a specific object we're editing, so we can pull values/data from
+      //the object
+      //Below we take the existing value of the field(if any) and do a lookup in our objectives list
+      //if we find a match, we ensure the text of the dropdown menu shows correctly
+      %currentVal = %ownerObj.getFieldValue(%fieldName);
+      %nextObjectiveDisplayText = "";
+      if(%currentVal !$= "")
+      {
+         %set = RootGroup;
+         %count = %set.getCount();
+         for( %i = 0; %i < %count; %i ++ )
+         {
+            %nextQuestObj = %set.getObject( %i );
+            %classType = %nextQuestObj.class;
+            
+            %qName = %nextQuestObj.getName() $= "" ? %nextQuestObj.objectiveName : %nextQuestObj.getName();
+            if (%classType $= "objectiveInfo" && %currentVal $= %qName) 
+            {
+               //We found an objective that matched the name set in our field data, so we're good
+               %nextObjective = %nextQuestObj;
+               break;
+            }      
+         } 
+   
+         if(%nextObjective !$= "")
+            %nextObjectiveDisplayText = %nextObjective.DisplayName;
+      }
+      //Now that we probably have the correct displayed text for the objective associated in the set
+      //field, update the dropdown menu to display that value
+      %setCommand = %editControl @ ".setText(\"" @ %nextObjectiveDisplayText @ "\");";
+      eval(%setCommand);
+   }
+   
+   %editControl.add(""); //Blank line lets us clear the field if we don't want a next objective
+   
+   %set = RootGroup;
+   %count = %set.getCount();
+   for( %i = 0; %i < %count; %i ++ )
+   {
+      %obj = %set.getObject( %i );
+      %classType = %obj.class;
+      
+      // we don't want to be able to list ourselves for the next Objective
+      //that'd create a infinite loop situation
+      if (%classType $= "ObjectiveInfo" && %obj != %ownerObj) 
+      {
+         //Didn't match to the objective being edited, so go ahead and add it to the list
+         %editControl.add(%obj.DisplayName); 
+      }      
+   }
+
+   //Set the caption and the actual edit guiControl for the InspectorField
+   %fieldCtrl.setCaption(%fieldLabel);
+   %fieldCtrl.setEditControl(%editControl);
+   
+   //Ensure we mark it as a specialEdit field so the callback stuff works later for
+   //editing, callbacks, and documentation display
+   %fieldCtrl.setSpecialEditVariableName(%fieldLabel);
+   %fieldCtrl.setSpecialEditVariableType("ObjectiveList");
+   %fieldCtrl.setSpecialEditCallbackName(%callbackName);
+   %fieldCtrl.setFieldDocs(%fieldDesc);
+   
+   //Pass our final GuiInspectorField up to the InspectorGroup to be added to the stack
+   %this.addInspectorField(%fieldCtrl);
+}
+
+//Our ObjectiveList dropdown had a selection happen, so lets find and assign the
+//objective that was selected to the field
+function GuiInspectorObjectiveListField::onSelect( %this, %id, %text )
+{   
+   //First, lets find the Objective in question
+   %targetObjective = "";
+   %set = RootGroup;
+   %count = %set.getCount();
+   for( %i = 0; %i < %count; %i ++ )
+   {
+      %obj = %set.getObject( %i );
+      %classType = %obj.class;
+      
+      if (%classType $= "objectiveInfo" && %obj.DisplayName $= %text) 
+      {
+         //Match on the display name, so we can pass along the objective object name
+         %targetObjective = %obj;
+         break;
+      }      
+   } 
+   
+   //We have to have a valid objective object to save the name of into the field
+   if(!isObject(%targetObjective))
+   {
+      error("GuiInspectorObjectiveListField::onSelect() - unable to find Objective with display name: " @ %text);
+      return;
+   }
+   
+   if(getSubStr(%this.fieldName, 0, 1) $= "$")
+   {
+      //If it's a global variable field, handle that accordingly
+      %setCommand = %this.fieldName @ " = \"" @ %targetObjective.getName() @ "\";";
+   }
+   else if(isObject(%this.ownerObject))
+   {
+      //regular variable on an object
+      %setCommand = %this.ownerObject @ "." @ %this.fieldName @ " = \"" @ %targetObjective.getName() @ "\";";
+   }
+   else if(%this.callbackName !$= "")
+   {
+      //Special callback handling for setting if we're not a global or an object field
+      %setCommand = %this.callbackName @ "(\"" @ %this.fieldName @ "\",\"" @ %targetObjective.getName() @"\");";
+   }
+   
+   //Execute the command to apply the field change
+   eval(%setCommand);
+}

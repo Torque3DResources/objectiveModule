@@ -1,0 +1,36 @@
+new ScriptObject(TimingObjective)
+{
+   class = "ObjectiveInfo";
+   ObjectiveName = "TimingObjective";
+   timeToComplete = "0.3";
+   description = "A simple Objective that tests your ability to traverse to the green platform at the end of the obstacle course within a time limit!";
+   displayName = "A Timing Objective";
+   repeatable = "1";
+};
+
+new ScriptObject(ItemCollectObjective)
+{
+   class = "ObjectiveInfo";
+   displayName = "Item Collection Objective";
+   collectionCount = "1";
+   ObjectiveName = "ItemCollectObjective";
+   description = "A Objective that tests your ability to collect an item to complete";
+   nextObjective = "StepToObjective";
+   collectionItem = "PrototypeItemData";
+   repeatable = "1";
+   onStart = "onItemCollecObjectiveStart";
+};
+
+new ScriptObject(StepToObjective)
+{
+   class = "ObjectiveInfo";
+   description = "Now that you've completed your prior task, step on the nearby green platform to complete the Objective!";
+   displayName = "Step-To Objective";
+   ObjectiveName = "StepToObjective";
+};
+
+function ItemCollectObjective::onItemCollecObjectiveStart(%this)
+{
+   if(isObject(itemSpawnTrigger))
+      itemSpawnTrigger.spawnObject("");  
+}

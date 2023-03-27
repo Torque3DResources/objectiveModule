@@ -1,0 +1,88 @@
+function serverCMDTrackObjective(%client, %ObjectiveTag)
+{
+    resumeObjective(%ObjectiveTag);
+}
+
+function serverCMDgetObjectives(%cl,%includeComplete)
+{
+    updateObjectiveForClient(%cl,%includeComplete);
+}
+
+function updateObjectiveForClient(%cl,%includeComplete)
+{
+   //Inform the client to clear their objective trackers
+   commandToClient(%cl,'clearObjectiveTracker');
+   
+   %count = ObjectiveModule.Objectives.count();
+   for (%i=0; %i<%count; %i++)
+   {
+      //Get the status and the objectiveDef from our list
+      %status = ObjectiveModule.Objectives.getValue(%i);
+      %Objective = ObjectiveModule.Objectives.getKey(%i);
+      
+      //If we don't have a valid objective, skip this entriy
+      if(!isObject(%Objective))
+         continue;
+
+      //If the client has indicated they don't want to include completed objectives
+      //then skip any with that status
+      if (!%includeComplete && (%status $= "complete"))
+         continue;
+
+      //If it's an objective that tracks the progress of collecting some items
+      //We'll special-handle the Description we pass down to the client to also
+      //have the progress of the collection
+      %itemlist = "";
+      if (%Objective.collectionItem !$= "")
+      {
+         %itemCount = ObjectiveModule.items.getValue(ObjectiveModule.items.getIndexFromKey(%Objective.collectionItem));
+         %itemCountStr = %itemCount $= "" ? "0" : %itemCount;
+         %itemlist = ":"@ %Objective.collectionItem.pickUpName SPC %itemCountStr @"/"@ %Objective.collectionCount;
+      }
+      %ObjectiveDesc = %Objective.displayName @ %itemlist;
+
+      //Send down this objective and its data
+      //We tag the commonly reused strings like the status or extended description files to cut down on
+      //network overhead for those non-unique strings
+      commandToClient(%cl, 'appendObjectiveTracker', %Objective.Name, %ObjectiveDesc, addTaggedString(%status), addTaggedString(%Objective.ExtendedDescriptionFile));
+   }
+   
+   //If the current objective has a timer tracker, make sure to tell the client status of it
+   //so they can display in as needed. 
+   //If there's no such timeToComplete, inform them with a 0 value so they can hide the element
+   if (curObjective().timeToComplete>0)
+   {
+      %remaining = getEventTimeLeft(ObjectiveModule.countdown[curObjective()]);
+      commandToClient(%cl,'updateObjectiveClock',%remaining/1000);
+   }
+   else
+      commandToClient(%cl,'updateObjectiveClock',0);    
+}
+
+//This will cycle through the objectives list for the next valid objective
+//that can be made active
+function serverCMDCycleObjective(%cl)
+{
+    if (ObjectiveModule.Objectives.count() <= 1) 
+      return;
+      
+    pauseObjective(curObjective());
+    //resume last non-complete Objective
+    %found = false;
+    %searched = 0;
+    while (!%found && %searched<ObjectiveModule.Objectives.count())
+    {
+        if (ObjectiveModule.Objectives.moveNext() == -1) //increment current
+            ObjectiveModule.Objectives.setCurrent(0);
+        if (!(ObjectiveModule.Objectives.getValue(ObjectiveModule.Objectives.getCurrent()) $= "complete"))
+        {
+            if (!(ObjectiveModule.Objectives.getValue(ObjectiveModule.Objectives.getCurrent()) $= "failed"))
+            {
+                %found = true;
+            }
+        }
+        %searched++;
+    }
+        
+    resumeObjective(curObjective());
+}

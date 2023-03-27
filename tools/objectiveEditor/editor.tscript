@@ -1,0 +1,42 @@
+function initializeObjectiveEditor()
+{
+   echo( " - Initializing Objective Editor" );
+   
+   //exec( "./scripts/ObjectiveAsset." @ $TorqueScriptFileExtension );
+   exec( "./scripts/ObjectiveListFieldType." @ $TorqueScriptFileExtension );
+   exec( "./guis/ObjectiveEditorGui." @ $TorqueScriptFileExtension );
+   exec( "./guis/ObjectiveEditorGui.gui" );
+
+   new ScriptObject( ObjectiveEditorPlugin )
+   {
+      superClass = "EditorPlugin";
+   };
+}
+
+function destroyObjectiveEditor()
+{
+}
+
+function ObjectiveEditorPlugin::onWorldEditorStartup( %this )
+{  
+   // Add ourselves to the window menu.
+   %ObjectiveEditorName = "Objective Editor";
+   
+   %windowMenu = EditorGui.findMenu( "Editors" );   
+   %count = %windowMenu.getItemCount();      
+   
+   %alreadyExists = false;
+   for ( %i = 0; %i < %count; %i++ )
+   {      
+      %existingPluginName = getField(%windowMenu.Item[%i], 0);
+      
+      if(%ObjectiveEditorName $= %existingPluginName)
+         return;
+   }
+         
+   if(!%alreadyExists)
+   {
+      %pluginCommand = "Canvas.pushDialog(ObjectiveEditorGUI);";
+      %windowMenu.addItem( %count, %ObjectiveEditorName TAB "" TAB %pluginCommand);
+   }
+}

@@ -1,0 +1,255 @@
+//==============================================================================
+// ObjectiveEditorGUI
+// This editor allows for the easy edit and creation of Objective objects for the
+// Objectives system for the ObjectiveModule
+// Utilizes some GuiInspector special-field logic to allow completely script
+// based fields when inspecting the ObjectiveInfo type objects
+//==============================================================================
+function ObjectiveEditorGui::onWake(%this)
+{
+   //Ensure we have a persist manager for saving changes on our objectives out
+   if( !isObject( %this.persistenceMgr ) )
+      %this.persistenceMgr = new PersistenceManager();
+      
+   //Ensure we populate the currently loaded Objectives list for editing when 
+   //the GUI opens
+   %this.populateObjectivesList();
+}
+
+function ObjectiveEditorGui::onSleep(%this)
+{
+    
+}
+
+function ObjectiveEditorGui::populateObjectivesList(%this)
+{
+   %this-->ObjectiveList.clear();
+   
+   //We iterate over the RootGroup, which contains all objects
+   //not specifically put under a different SimGroup.
+   //As we go, we compare the objects' class field against the "ObjectiveInfo" type
+   //which denotes the object as a ObjectiveInfo object, aka, an Objective definition
+   //We then populate it into the editor list for selection
+   %set = RootGroup;
+   %count = %set.getCount();
+   for( %i = 0; %i < %count; %i ++ )
+   {
+      %obj = %set.getObject( %i );
+      %classType = %obj.class;
+      if (%classType $= "ObjectiveInfo")
+      {
+         %this-->ObjectiveList.addRow(%i, %obj.DisplayName);
+      }
+   }
+}
+
+function ObjectiveEditorGui::promptSave(%this)
+{
+   %ObjectiveDef = %this-->ObjectiveInspector.getInspectObject();
+   
+   //validation
+   if(%ObjectiveDef.newObjective && %ObjectiveDef.ObjectiveName $= "")
+   {
+      toolsMessageBoxOK("Error", "A Objective must have a ObjectiveName defined!");
+      return;
+   }
+   
+   if(%ObjectiveDef.newObjective && strpos(%ObjectiveDef.ObjectiveName," ") != -1)
+   {
+      toolsMessageBoxOK("Error", "ObjectiveName cannot have spaces. Please rename.");
+      return;
+   }
+   
+   //now we save out
+   //if it's flagged as newly created, clear that flag and just save it
+   //otherwise, prompt the confirmation first
+   if(%ObjectiveDef.newObjective)
+   {
+      %this.newObjectiveDef = %ObjectiveDef;
+      AssetBrowser_SelectModule.showDialog("ObjectiveEditorGui.selectedObjectiveTargetModule");
+      AssetBrowser_SelectModuleWindow.selectWindow();   
+   }
+   else
+   {
+      toolsMessageBoxYesNo("Save Objective?", "Do you wish to save this Objective?",
+         %this @ ".doSave(" @ %ObjectiveDef @ ");");
+   }
+}
+
+//We're making a new objective, so we need to select what module it's being saved
+//to first
+function ObjectiveEditorGui::selectedObjectiveTargetModule(%this, %module)
+{
+   //At the current juncture, we just have objectives saved to a managed data 
+   //script file, akin to forest items or datablocks
+   %moduleDef = ModuleDatabase.findModule(%module);
+   %destinationFile = %moduleDef.ModulePath @ "/scripts/managedData/managedObjectiveData." @ $TorqueScriptFileExtension; 
+   
+   //If the folders don't exist, make them
+   if(!isDirectory(filePath(%destinationFile)))
+   {
+      AssetBrowser.dirHandler.createFolder(filePath(%destinationFile));
+   }
+   
+   //Clear our new objective flag so it doesn't get saved
+   %this.newObjectiveDef.newObjective = "";
+   
+   //this ensures any reference/lookup/namespace stuff works consistently
+   %this.newObjectiveDef.setName(%this.newObjectiveDef.ObjectiveName); 
+   
+   //Mark it as dirty and indicate to the persistManager what the new object's
+   //destination file is.
+   //The persist manager will take care of the actual writing and save out of the
+   //object for us
+   %this.persistenceMgr.setDirty(%this.newObjectiveDef, makeFullPath(%destinationFile));
+   %this.doSave(%this.newObjectiveDef);
+}
+
+function ObjectiveEditorGui::doSave(%this, %ObjectiveDef)
+{
+   //If the name has been changed, ensure the object name is updated before we 
+   //save out to file
+   if(%ObjectiveDef.newObjective)
+      %ObjectiveDef.setName(%ObjectiveDef.ObjectiveName);
+   
+   //If we haven't marked the object as dirty yet, do so now
+   if( !%this.persistenceMgr.isDirty( %ObjectiveDef ) )
+         %this.persistenceMgr.setDirty( %ObjectiveDef );
+         
+   //Save all dirty objects
+   %this.persistenceMgr.saveDirty();  
+   
+   refreshObjectiveEditor();
+}
+
+function ObjectiveEditorGui::close(%this)
+{
+   Canvas.popDialog(ObjectiveEditorGui);
+}
+
+function ObjectiveEditorGui::newObjective(%this)
+{
+   //Create the new object for our Objective, and give it the ObjectiveInfo
+   //class. This is what we scan for when collating lists of objectives, and
+   //is used for namespace callbacks for integration
+   //We also mark it as newObject = true so we can do the initial saving prompts
+   //properly
+   %ObjectiveObject = new ScriptObject() {
+      class= "ObjectiveInfo";
+      newObjective = true; 
+   };
+   
+   //Now that it exists, we inspect it so the user can fill out the info for it
+   //in the editor
+   ObjectiveEditorGui-->ObjectiveInspector.inspect(%ObjectiveObject);
+}
+
+function ObjectiveEditorGui::deleteObjective(%this)
+{
+   //Fetch the currently selected objective
+   %ObjectiveDef = %this-->ObjectiveInspector.getInspectObject();
+   
+   //Prompt to make sure they're sure
+   toolsMessageBoxYesNo("Delete Objective?", "Do you wish to delete this Objective? This operation cannot be undone.",
+         %this @ ".doDelete(" @ %ObjectiveDef @ ");");
+}
+
+function ObjectiveEditorGui::doDelete(%this, %ObjectiveDef)
+{
+   //We got the go ahead, so delete it for real
+   %this.persistenceMgr.removeObjectFromFile( %ObjectiveDef );
+}
+
+function refreshObjectiveEditor()
+{
+   ObjectiveEditorGui.populateObjectivesList();
+}
+
+//
+function ObjectiveEditorObjectiveList::onSelect(%this, %id, %text)
+{
+   //We've selected an objective from our listing, so loop through our
+   //ObjectiveInfo-classed objects and find the one with the matching display
+   //name
+   %set = RootGroup;
+   %count = %set.getCount();
+   for( %i = 0; %i < %count; %i ++ )
+   {
+      %obj = %set.getObject( %i );
+      %classType = %obj.class;
+      if (%classType $= "ObjectiveInfo" && %obj.DisplayName $= %text)
+      {
+         //Found the match, so we'll indicate to our ObjectiveInspector to do
+         //the inspect action, then bail out of the loop
+         ObjectiveEditorGui-->ObjectiveInspector.inspect(%obj);
+         break;
+      }
+   }
+}
+
+function ObjectiveEditorInspector::onFieldSelected( %this, %fieldName, %fieldTypeStr, %fieldDoc )
+{
+   //A field's been selected, so we'll want to inform our documentation block on the GUI to display the details of this field
+   ObjectiveEditorGui-->FieldInfoCtrl.setText( "<font:Arial Bold:14>" @ %fieldName @ "<font:Arial Italic:14> (" @ %fieldTypeStr @ ") " NL "<font:Arial:14>" @ %fieldDoc );
+}
+
+//This function is invoked by the inspector itself, but called through the object's namespace
+//This allows us to do special-case overrides that the namespace/class itself can dictate
+//opening up options like entirely script-defined editor fields and behaviors
+//Below, we create various groups for the different fields we want to edit for this
+//editor
+//Internally, the bindings on the field happens entirely business as usual, so when
+//the field is changed in the inspector, the field of that name on the edited object
+//has the change applied.
+//For this here, all these fields are completely dynamic, existing only in script
+//But since all the rest of the objectives system uses those fields, it all integrates
+//cleanly
+function ObjectiveInfo::onInspect(%this, %inspector)
+{
+   //Clean up some bits we don't need for this. Any given object has a lot of groups
+   //and fields that are very useful for functionality, but don't matter in the context
+   //of editing an objective
+   %inspector.removeGroup("Ungrouped");
+   %inspector.removeGroup("General");
+   %inspector.removeGroup("Object");
+   %inspector.removeGroup("Editing");
+   %inspector.removeGroup("Persistence");
+   %inspector.removeGroup("Dynamic Fields");
+   
+   %group = %inspector.createGroup("Objective Properties", 0); 
+   
+   if(%this.newObjective)
+   {
+      %group.addField("ObjectiveName", "string", "The name of this objective object");
+   }
+   
+   %group.addField("DisplayName", "string", "The name of the objective as displayed in human-readable format");
+   %group.addField("Description", "command", "The longer description of this objective");
+   %group.addField("ExtendedDescriptionFile", "filename", "A companion text file that can be parsed for long-form descriptions in menus");
+   %group.addField("Achievement", "string", "A special achivement activated when objective is completed");
+   
+   //For these two specifically, they use the 'ObjectiveList' type. This is a custom type that the engine doesn't have out of the box.
+   //When encountering this, the inspector will call down into the scripts to attempt to find a function to build out this special field type
+   //In the end, this invokes the buildObjectiveListField() function in our ObjectiveListFieldType.tscript file
+   %group.addField("NextObjective", "ObjectiveList", "The name of the next objective to activate when this one is completed");
+   %group.addField("FailObjective", "ObjectiveList", "The name of the next objective to active if this one is failed");
+   
+   %group.addField("Repeatable", "bool", "Is this objective repeatable");
+   %group.addField("TimeToComplete", "int", "Time alloted for completion of the objective");
+   %group.addField("TimePausesWithObjective", "bool", "If true, the timer for this quest will be paused if the quest status is paused and reactivates when the quest does");
+   %group.addField("CollectionItem", "string", "The name of the item object required to be collected for this objective to be completed");
+   %group.addField("CollectionCount", "int", "The number of the CollectionItems to collect to complete this objective");
+   %group.addField("LocationMarker", "string", "A specific location to denote a reference position for this objective");
+   
+   %group = %inspector.createGroup("Objective Callbacks", 0); 
+   %group.addField("onStart", "string", "Optional additional callback for when this quest is started");
+   %group.addField("onPause", "string", "Optional additional callback for when this quest is paused");
+   %group.addField("onResume", "string", "Optional additional callback for when this quest is resumed");
+   %group.addField("onComplete", "string", "Optional additional callback for when this quest is completed");
+   %group.addField("onFailed", "string", "Optional additional callback for when this quest is failed");
+   
+   %group = %inspector.createGroup("Objective Management", 0);
+   %group.addField("objectiveGroupName", "string", "Name of the scene group this objective can use for holding objects when activated");
+   %group.addField("objectivePermaGroupName", "string", "Name of the scene group this objective can use for holding persistant objects that stay in the map when this objective is activated, even after it is resolved.");
+   %group.addField("objectiveCompleteGroupName", "string", "Name of the scene group this objective can use for holding objects that exist in the map once it is completed.");
+}

@@ -1,0 +1,459 @@
+//--- OBJECT WRITE BEGIN ---
+new Scene(ObjectiveTestLevel) {
+   isEditing = "1";
+   gameModeName = "DeathMatchGame";
+      Enabled = "1";
+
+   new LevelInfo(theLevelInfo) {
+      fogColor = "0.6 0.6 0.7 1";
+      fogDensityOffset = "700";
+      canvasClearColor = "0 0 0 255";
+      soundAmbience = "AudioAmbienceDefault";
+         advancedLightmapSupport = "0";
+         Enabled = "1";
+   };
+   new GroundPlane() {
+      scaleU = "25";
+      scaleV = "25";
+      MaterialAsset = "Prototyping:FloorGray";
+         allowPlayerClimb = "0";
+         allowPlayerLedgeGrab = "0";
+         allowPlayerWallHug = "0";
+         cameraIgnores = "0";
+         dirtyGameObject = "0";
+         Enabled = "1";
+         position = "0 0 0";
+         rotation = "1 0 0 0";
+         scale = "1 1 1";
+   };
+   new ScatterSky() {
+      azimuth = "45";
+      brightness = "5";
+      MoonMatAsset = "Core_Rendering:moon_wglow";
+      useNightCubemap = "1";
+      nightCubemap = "nightCubemap";
+      texSize = "2048";
+      shadowDistance = "25";
+      fadeStartDistance = "15";
+      position = "48.1787 50.8458 -45.5865";
+         allowPlayerClimb = "0";
+         allowPlayerLedgeGrab = "0";
+         allowPlayerWallHug = "0";
+         cameraIgnores = "0";
+         dirtyGameObject = "0";
+         mieScattering = "0.0045";
+   };
+   new CloudLayer() {
+      TextureAsset = "Core_Rendering:missingTexture_image";
+      position = "48.1787 50.8458 -45.5865";
+         allowPlayerClimb = "0";
+         allowPlayerLedgeGrab = "0";
+         allowPlayerWallHug = "0";
+         cameraIgnores = "0";
+         dirtyGameObject = "0";
+   };
+   new Skylight() {
+      position = "1.37009 -5.23561 46.5817";
+      persistentId = "d5eb3afb-dced-11e9-a423-bb0e346e3870";
+         allowPlayerClimb = "0";
+         allowPlayerLedgeGrab = "0";
+         allowPlayerWallHug = "0";
+         cameraIgnores = "0";
+         dirtyGameObject = "0";
+   };
+   new SimGroup(PlayerDropPoints) {
+
+      new SpawnSphere(spawn_player) {
+         radius = "10";
+         sphereWeight = "1";
+         indoorWeight = "1";
+         outdoorWeight = "1";
+         dataBlock = "SpawnSphereMarker";
+         position = "-0.682912 -41.1 2.49939";
+            allowPlayerClimb = "0";
+            allowPlayerLedgeGrab = "0";
+            allowPlayerWallHug = "0";
+            cameraIgnores = "0";
+            dirtyGameObject = "0";
+            firstDataCheck = "1";
+            homingCount = "0";
+            lockCount = "0";
+      };
+   };
+   new ConvexShape() {
+      MaterialAsset = "Prototyping:WallOrange";
+      position = "10.9348 2.5313 1.6803";
+      rotation = "0 0 -1 90.1319";
+         allowPlayerClimb = "0";
+         allowPlayerLedgeGrab = "0";
+         allowPlayerWallHug = "0";
+         cameraIgnores = "0";
+         dirtyGameObject = "0";
+
+      surface = "0 0 0 1 2.55233 -5.06961e-07 1.6803 0 0 0 1 1 0 1 1";
+      surface = "0 1 0 0 2.55233 -5.06317e-07 -1.6803 0 0 0 1 1 0 1 1";
+      surface = "0.707107 -2.4631e-08 2.4631e-08 0.707107 2.55233 0.775025 -2.84217e-14 0 0 0 1 1 0 1 1";
+      surface = "2.4631e-08 0.707107 -0.707107 2.4631e-08 2.55232 -0.775026 -5.68434e-14 0 0 0 1 1 0 1 1";
+      surface = "0.5 0.5 -0.5 0.5 -2.58107 -1.49012e-07 -7.32314e-07 0 0 0 1 1 0 1 1";
+      surface = "0.5 -0.5 0.5 0.5 7.68572 -8.64267e-07 -7.32314e-07 0 0 0 1 1 0 1 1";
+   };
+   new ConvexShape() {
+      MaterialAsset = "Prototyping:WallOrange";
+      position = "4.34374 2.5313 1.6803";
+      rotation = "0 0 -1 90.1319";
+         allowPlayerClimb = "0";
+         allowPlayerLedgeGrab = "0";
+         allowPlayerWallHug = "0";
+         cameraIgnores = "0";
+         dirtyGameObject = "0";
+
+      surface = "0 0 0 1 2.60424 9.27245e-11 1.6803 0 0 0 1 1 0 1 1";
+      surface = "0 1 0 0 2.60424 -9.26705e-11 -1.6803 0 0 0 1 1 0 1 1";
+      surface = "0.707107 -8.12812e-09 8.12813e-09 0.707107 2.60424 0.775026 0 0 0 0 1 1 0 1 1";
+      surface = "8.12813e-09 0.707107 -0.707107 8.12813e-09 2.60424 -0.775026 -2.84217e-14 0 0 0 1 1 0 1 1";
+      surface = "0.5 0.5 -0.5 0.5 -2.58107 1.19209e-07 -7.62826e-07 0 0 0 1 1 0 1 1";
+      surface = "0.5 -0.5 0.5 0.5 7.78955 -1.19209e-07 -7.62826e-07 0 0 0 1 1 0 1 1";
+   };
+   new ConvexShape() {
+      MaterialAsset = "Prototyping:WallOrange";
+      position = "10.9289 5.08362 3.36061";
+      rotation = "0 0 -1 90.1319";
+         allowPlayerClimb = "0";
+         allowPlayerLedgeGrab = "0";
+         allowPlayerWallHug = "0";
+         cameraIgnores = "0";
+         dirtyGameObject = "0";
+
+      surface = "0 0 0 1 -6.07036e-08 3.30553 0.745446 0 0 0 1 1 0 1 1";
+      surface = "0 1 0 0 0 3.30553 0 0 0 0 1 1 0 1 1";
+      surface = "-0.707107 7.07935e-09 7.07935e-09 0.707107 0 -0.775026 0.372723 0 0 0 1 1 0 1 1";
+      surface = "0.5 -0.5 -0.5 -0.5 -5.1334 3.30553 0.372723 0 0 0 1 1 0 1 1";
+      surface = "0 0.707107 0.707107 0 0 7.38609 0.372723 0 0 0 1 1 0 1 1";
+      surface = "0.5 0.5 0.5 -0.5 5.1334 3.30553 0.372723 0 0 0 1 1 0 1 1";
+   };
+   new ConvexShape() {
+      MaterialAsset = "Prototyping:WallOrange";
+      position = "7.71762 18.9029 5.088";
+      rotation = "0 0 1 90.2364";
+         allowPlayerClimb = "0";
+         allowPlayerLedgeGrab = "0";
+         allowPlayerWallHug = "0";
+         cameraIgnores = "0";
+         dirtyGameObject = "0";
+
+      surface = "0 0 0 1 0 0 1.6212 0 0 0 1 1 0 1 1";
+      surface = "0 1 0 0 0 0 -1.6212 0 0 0 1 1 0 1 1";
+      surface = "0.707107 0 0 0.707107 0 2.53013 0 0 0 0 1 1 0 1 1";
+      surface = "0 0.707107 -0.707107 0 0 -2.53013 -1.13687e-13 0 0 0 1 1 0 1 1";
+      surface = "0.5 0.5 -0.5 0.5 -2.56799 0 -2.32499e-07 0 0 0 1 1 0 1 1";
+      surface = "0.5 -0.5 0.5 0.5 2.56799 0 -2.32499e-07 0 0 0 1 1 0 1 1";
+   };
+   new ConvexShape() {
+      MaterialAsset = "Prototyping:WallOrange";
+      position = "7.80703 18.8556 3.58417";
+      rotation = "0.708564 0.705647 0 180";
+         allowPlayerClimb = "0";
+         allowPlayerLedgeGrab = "0";
+         allowPlayerWallHug = "0";
+         cameraIgnores = "0";
+         dirtyGameObject = "0";
+
+      surface = "0 0 0 1 -2.37954 -2.30515 3.46959 0 0 0 1 1 0 1 1";
+      surface = "0 1 0 0 -2.37954 -2.30515 0 0 0 0 1 1 0 1 1";
+      surface = "-0.707107 -2.23653e-07 -2.23653e-07 0.707107 -2.37955 -2.53013 1.7348 0 0 0 1 1 0 1 1";
+      surface = "-0.499997 0.500003 0.500003 0.499997 -2.56799 -2.30515 1.73479 0 0 0 1 1 0 1 1";
+      surface = "-4.47305e-07 0.707107 0.707107 4.47305e-07 -2.37954 -2.08017 1.7348 0 0 0 1 1 0 1 1";
+      surface = "-0.500003 -0.499997 -0.499997 0.500003 -2.1911 -2.30515 1.73479 0 0 0 1 1 0 1 1";
+   };
+   new ConvexShape() {
+      MaterialAsset = "Prototyping:WallOrange";
+      position = "7.73724 23.6588 3.46681";
+      rotation = "0.708564 0.705647 0 180";
+         allowPlayerClimb = "0";
+         allowPlayerLedgeGrab = "0";
+         allowPlayerWallHug = "0";
+         cameraIgnores = "0";
+         dirtyGameObject = "0";
+
+      surface = "0 0 0 1 -2.37954 -2.30515 3.46959 0 0 0 1 1 0 1 1";
+      surface = "0 1 0 0 -2.37954 -2.30515 0 0 0 0 1 1 0 1 1";
+      surface = "-0.707107 -2.23653e-07 -2.23653e-07 0.707106 -2.37955 -2.53013 1.7348 0 0 0 1 1 0 1 1";
+      surface = "-0.499997 0.500003 0.500003 0.499997 -2.56799 -2.30515 1.73479 0 0 0 1 1 0 1 1";
+      surface = "-4.47305e-07 0.707107 0.707107 4.47305e-07 -2.37954 -2.08017 1.7348 0 0 0 1 1 0 1 1";
+      surface = "-0.500003 -0.499997 -0.499997 0.500003 -2.1911 -2.30515 1.73479 0 0 0 1 1 0 1 1";
+   };
+   new ConvexShape() {
+      MaterialAsset = "Prototyping:WallOrange";
+      position = "12.3204 23.6588 3.46681";
+      rotation = "0.708564 0.705647 0 180";
+         allowPlayerClimb = "1";
+         allowPlayerLedgeGrab = "1";
+         allowPlayerWallHug = "0";
+         cameraIgnores = "0";
+         dirtyGameObject = "0";
+
+      surface = "0 0 0 1 -2.37954 -2.30515 3.46959 0 0 0 1 1 0 1 1";
+      surface = "0 1 0 0 -2.37954 -2.30515 0 0 0 0 1 1 0 1 1";
+      surface = "-0.707107 -2.23653e-07 -2.23653e-07 0.707107 -2.37955 -2.53013 1.7348 0 0 0 1 1 0 1 1";
+      surface = "-0.499997 0.500003 0.500003 0.499997 -2.56799 -2.30515 1.73479 0 0 0 1 1 0 1 1";
+      surface = "-4.47305e-07 0.707107 0.707107 4.47305e-07 -2.37954 -2.08017 1.7348 0 0 0 1 1 0 1 1";
+      surface = "-0.500003 -0.499997 -0.499997 0.500003 -2.1911 -2.30515 1.73479 0 0 0 1 1 0 1 1";
+   };
+   new ConvexShape() {
+      MaterialAsset = "Prototyping:WallOrange";
+      position = "12.3008 18.9029 3.46681";
+      rotation = "0.708564 0.705647 0 180";
+         allowPlayerClimb = "0";
+         allowPlayerLedgeGrab = "0";
+         allowPlayerWallHug = "0";
+         cameraIgnores = "0";
+         dirtyGameObject = "0";
+
+      surface = "0 0 0 1 -2.37954 -2.30515 3.46959 0 0 0 1 1 0 1 1";
+      surface = "0 1 0 0 -2.37954 -2.30515 0 0 0 0 1 1 0 1 1";
+      surface = "-0.707107 -2.23653e-07 -2.23653e-07 0.707106 -2.37955 -2.53013 1.7348 0 0 0 1 1 0 1 1";
+      surface = "-0.499997 0.500003 0.500003 0.499997 -2.56799 -2.30515 1.73479 0 0 0 1 1 0 1 1";
+      surface = "-4.47305e-07 0.707107 0.707107 4.47305e-07 -2.37954 -2.08017 1.7348 0 0 0 1 1 0 1 1";
+      surface = "-0.500003 -0.499997 -0.499997 0.500003 -2.1911 -2.30515 1.73479 0 0 0 1 1 0 1 1";
+   };
+   new ConvexShape() {
+      MaterialAsset = "Prototyping:WallOrange";
+      position = "8.12702 -8.88695 1.62731";
+      rotation = "0 0 1 90.2364";
+         allowPlayerClimb = "0";
+         allowPlayerLedgeGrab = "0";
+         allowPlayerWallHug = "0";
+         cameraIgnores = "0";
+         dirtyGameObject = "0";
+
+      surfaceTexture = "FloorGray";
+      surface = "-0 -0.169145 0 0.985591 -2.60924e-07 0 0.713028 1 0 0 1 1 0 1 1";
+      surface = "0 0.985591 0 0.169145 -2.98023e-07 0 -2.52937 0 0 0 1 1 0 1 1";
+      surface = "0.707107 7.35517e-08 -7.35518e-08 0.707107 -1.95566e-07 2.53013 -0.908171 0 0 0 1 1 0 1 1";
+      surface = "7.35517e-08 0.707107 -0.707107 7.35518e-08 -1.95567e-07 -2.53013 -0.908171 0 0 0 1 1 0 1 1";
+      surface = "0.5 0.5 -0.5 0.5 -2.56799 0 2.7075e-06 0 0 0 1 1 0 1 1";
+      surface = "0.5 -0.5 0.5 0.5 2.56799 0 -1.81635 0 0 0 1 1 0 1 1";
+   };
+   new ConvexShape() {
+      MaterialAsset = "Prototyping:WallOrange";
+      position = "8.08482 -19.1171 1.62731";
+      rotation = "0 0 1 90.2364";
+         allowPlayerClimb = "0";
+         allowPlayerLedgeGrab = "0";
+         allowPlayerWallHug = "0";
+         cameraIgnores = "0";
+         dirtyGameObject = "0";
+
+      surfaceTexture = "FloorGray";
+      surface = "0 0 0 1 0 0 1.6212 1 0 0 1 1 0 1 1";
+      surface = "0 1 0 0 0 0 -1.6212 0 0 0 1 1 0 1 1";
+      surface = "0.707107 0 0 0.707107 0 2.53013 0 0 0 0 1 1 0 1 1";
+      surface = "0 0.707107 -0.707107 0 0 -2.53013 -1.13687e-13 0 0 0 1 1 0 1 1";
+      surface = "0.5 0.5 -0.5 0.5 -2.56799 0 -2.32499e-07 0 0 0 1 1 0 1 1";
+      surface = "0.5 -0.5 0.5 0.5 2.56799 0 -2.32499e-07 0 0 0 1 1 0 1 1";
+   };
+   new ConvexShape() {
+      MaterialAsset = "Prototyping:NatureGreen";
+      position = "-7.70511 -12.7938 0.05";
+      rotation = "0 0 1 90.8842";
+         allowPlayerClimb = "0";
+         allowPlayerLedgeGrab = "0";
+         allowPlayerWallHug = "0";
+         cameraIgnores = "0";
+         dirtyGameObject = "0";
+
+      surface = "0 0 0 1 0 0 0.05 0 0 0 1 1 0 1 1";
+      surface = "0 1 0 0 0 0 -0.05 0 0 0 1 1 0 1 1";
+      surface = "0.707107 0 0 0.707106 0 2.50365 0 0 0 0 1 1 0 1 1";
+      surface = "0 0.707107 -0.707107 0 0 -2.50365 -1.13687e-13 0 0 0 1 1 0 1 1";
+      surface = "0.5 0.5 -0.5 0.5 -2.55817 0 0 0 0 0 1 1 0 1 1";
+      surface = "0.5 -0.5 0.5 0.5 2.55817 0 0 0 0 0 1 1 0 1 1";
+   };
+   new ConvexShape() {
+      MaterialAsset = "Prototyping:WallOrange";
+      position = "7.68178 2.64096 0.05";
+      rotation = "0 0 1 90.8842";
+         allowPlayerClimb = "0";
+         allowPlayerLedgeGrab = "0";
+         allowPlayerWallHug = "0";
+         cameraIgnores = "0";
+         dirtyGameObject = "0";
+
+      surfaceTexture = "FloorGray";
+      surface = "0 0 0 1 -2.52319 -0.1036 0.05 1 0 0 1 1 0 1 1";
+      surface = "0 1 0 0 -2.52319 -0.1036 -0.05 0 0 0 1 1 0 1 1";
+      surface = "0.70707 0.00720696 -0.00720696 0.70707 -2.52319 2.40005 0 0 0 0 1 1 0 1 1";
+      surface = "-0.00720696 0.70707 -0.70707 -0.00720696 -2.52319 -2.60725 5.68434e-14 0 0 0 1 1 0 1 1";
+      surface = "0.5 0.5 -0.5 0.5 -7.60455 -0.207196 0 0 0 0 1 1 0 1 1";
+      surface = "0.5 -0.5 0.5 0.5 2.55817 -3.57628e-06 0 0 0 0 1 1 0 1 1";
+   };
+   new ConvexShape() {
+      MaterialAsset = "Prototyping:NatureGreen";
+      position = "7.78636 18.9023 0.05";
+      rotation = "0 0 1 90.8842";
+         allowPlayerClimb = "0";
+         allowPlayerLedgeGrab = "0";
+         allowPlayerWallHug = "0";
+         cameraIgnores = "0";
+         dirtyGameObject = "0";
+
+      surface = "0 0 0 1 0 0 0.05 0 0 0 1 1 0 1 1";
+      surface = "0 1 0 0 0 0 -0.05 0 0 0 1 1 0 1 1";
+      surface = "0.707107 0 0 0.707107 0 2.50365 0 0 0 0 1 1 0 1 1";
+      surface = "0 0.707107 -0.707107 0 0 -2.50365 -1.13687e-13 0 0 0 1 1 0 1 1";
+      surface = "0.5 0.5 -0.5 0.5 -2.55817 0 0 0 0 0 1 1 0 1 1";
+      surface = "0.5 -0.5 0.5 0.5 2.55817 0 0 0 0 0 1 1 0 1 1";
+   };
+   new Trigger() {
+      enterCommand = "completeObjective(StepToObjective);";
+      dataBlock = "DefaultTrigger";
+      position = "-7.70638 -12.784 -1.34211";
+      scale = "4.47945 4.6589 3.67667";
+         allowPlayerClimb = "0";
+         allowPlayerLedgeGrab = "0";
+         allowPlayerWallHug = "0";
+         cameraIgnores = "0";
+         dirtyGameObject = "0";
+         firstDataCheck = "1";
+   };
+   new ConvexShape() {
+      MaterialAsset = "Prototyping:WallOrange";
+      position = "8.10582 -14.0226 -0.195289";
+      rotation = "0 0 1 90.2364";
+         allowPlayerClimb = "0";
+         allowPlayerLedgeGrab = "0";
+         allowPlayerWallHug = "0";
+         cameraIgnores = "0";
+         dirtyGameObject = "0";
+
+      surfaceTexture = "FloorGray";
+      surface = "0 0 0 1 0 0 1.6212 1 0 0 1 1 0 1 1";
+      surface = "0 1 0 0 0 0 -1.6212 0 0 0 1 1 0 1 1";
+      surface = "0.707107 0 0 0.707107 0 2.53013 0 0 0 0 1 1 0 1 1";
+      surface = "0 0.707107 -0.707107 0 0 -2.53013 -1.13687e-13 0 0 0 1 1 0 1 1";
+      surface = "0.5 0.5 -0.5 0.5 -2.56799 0 -2.32499e-07 0 0 0 1 1 0 1 1";
+      surface = "0.5 -0.5 0.5 0.5 2.56799 0 -2.32499e-07 0 0 0 1 1 0 1 1";
+   };
+   new ConvexShape() {
+      MaterialAsset = "Prototyping:TrimYellow";
+      position = "-12.6464 -17.8186 0.05";
+      rotation = "0 0 1 90.8842";
+         allowPlayerClimb = "0";
+         allowPlayerLedgeGrab = "0";
+         allowPlayerWallHug = "0";
+         cameraIgnores = "0";
+         dirtyGameObject = "0";
+
+      surface = "0 0 0 1 0 0 0.05 0 0 0 1 1 0 1 1";
+      surface = "0 1 0 0 0 0 -0.05 0 0 0 1 1 0 1 1";
+      surface = "0.707107 0 0 0.707106 0 2.50365 0 0 0 0 1 1 0 1 1";
+      surface = "0 0.707107 -0.707107 0 0 -2.50365 -1.13687e-13 0 0 0 1 1 0 1 1";
+      surface = "0.5 0.5 -0.5 0.5 -2.55817 0 0 0 0 0 1 1 0 1 1";
+      surface = "0.5 -0.5 0.5 0.5 2.55817 0 0 0 0 0 1 1 0 1 1";
+   };
+   new Trigger() {
+      enterCommand = "completeObjective(TimingObjective);";
+      dataBlock = "DefaultTrigger";
+      position = "7.80703 18.8556 -0.25";
+      scale = "4.47945 4.6589 3.67667";
+         allowPlayerClimb = "0";
+         allowPlayerLedgeGrab = "0";
+         allowPlayerWallHug = "0";
+         cameraIgnores = "0";
+         dirtyGameObject = "0";
+         firstDataCheck = "1";
+   };
+   new BoxEnvironmentProbe() {
+      refScale = "6 10.3839 6";
+      position = "7.5 5 1.5";
+      scale = "6 10.3839 6";
+      persistentId = "9d8d3b03-697d-11eb-91e3-dc4a9bc582ed";
+      attenuation = "0.5";
+         allowPlayerClimb = "0";
+         allowPlayerLedgeGrab = "0";
+         allowPlayerWallHug = "0";
+         cameraIgnores = "0";
+         dirtyGameObject = "0";
+   };
+   new SpawnSphere(itemSpawnTrigger) {
+      spawnClass = "Item";
+      spawnDatablock = "PrototypeItemData";
+      spawnTransform = "1";
+      radius = "1";
+      sphereWeight = "1";
+      dataBlock = "SpawnSphereMarker";
+      position = "-12.5723 -17.8883 0.757304";
+      rotation = "0 0 1 90";
+      canSaveDynamicFields = "0";
+   };
+   new Trigger() {
+      TripCondition = "isObjectiveAvailable(ItemCollectObjective)";
+      enterCommand = "startObjective(ItemCollectObjective);";
+      dataBlock = "DefaultTrigger";
+      position = "-7.70638 -23.097 -1.34211";
+      scale = "4.47945 4.6589 3.67667";
+         allowPlayerClimb = "0";
+         allowPlayerLedgeGrab = "0";
+         allowPlayerWallHug = "0";
+         cameraIgnores = "0";
+         dirtyGameObject = "0";
+         firstDataCheck = "1";
+         result = "0";
+   };
+   new ConvexShape() {
+      MaterialAsset = "Prototyping:DetailBlue";
+      position = "-7.70511 -23.1068 0.05";
+      rotation = "0 0 1 90.8842";
+         allowPlayerClimb = "0";
+         allowPlayerLedgeGrab = "0";
+         allowPlayerWallHug = "0";
+         cameraIgnores = "0";
+         dirtyGameObject = "0";
+
+      surface = "0 0 0 1 0 0 0.05 0 0 0 1 1 0 1 1";
+      surface = "0 1 0 0 0 0 -0.05 0 0 0 1 1 0 1 1";
+      surface = "0.707107 0 0 0.707107 0 2.50365 0 0 0 0 1 1 0 1 1";
+      surface = "0 0.707107 -0.707107 0 0 -2.50365 -1.13687e-13 0 0 0 1 1 0 1 1";
+      surface = "0.5 0.5 -0.5 0.5 -2.55817 0 0 0 0 0 1 1 0 1 1";
+      surface = "0.5 -0.5 0.5 0.5 2.55817 0 0 0 0 0 1 1 0 1 1";
+   };
+   new ConvexShape() {
+      MaterialAsset = "Prototyping:WallOrange";
+      position = "8.07422 -21.685 1.62731";
+      rotation = "0.00145875 0.707106 -0.707106 179.833";
+
+      surfaceTexture = "FloorGray";
+      surface = "0 0 0 1 0 3.43396 8.00462 0 0 0 1 1 0 1 1";
+      surface = "0 1 0 0 0 -3.57628e-07 0 0 0 0 1 1 0 1 1";
+      surface = "-0.550341 2.59208e-08 -3.93252e-08 0.83494 -1.15399e-07 0.0957761 4.00231 1 0 0 1 1 0 1 1";
+      surface = "0.5 -0.5 -0.5 -0.5 -2.53013 1.71698 4.00231 0 0 0 1 1 0 1 1";
+      surface = "-3.83379e-08 0.83494 0.550341 -2.527e-08 -2.88498e-08 3.33818 4.00231 0 0 0 1 1 0 1 1";
+      surface = "0.5 0.5 0.5 -0.5 2.53013 1.71698 4.00231 0 0 0 1 1 0 1 1";
+   };
+   new ConvexShape() {
+      MaterialAsset = "Prototyping:DetailBlue";
+      position = "8.15404 -33.0845 0.05";
+      rotation = "0 0 1 90.8842";
+         allowPlayerClimb = "0";
+         allowPlayerLedgeGrab = "0";
+         allowPlayerWallHug = "0";
+         cameraIgnores = "0";
+         dirtyGameObject = "0";
+
+      surface = "0 0 0 1 0 0 0.05 0 0 0 1 1 0 1 1";
+      surface = "0 1 0 0 0 0 -0.05 0 0 0 1 1 0 1 1";
+      surface = "0.707107 0 0 0.707106 0 2.50365 0 0 0 0 1 1 0 1 1";
+      surface = "0 0.707107 -0.707107 0 0 -2.50365 -1.13687e-13 0 0 0 1 1 0 1 1";
+      surface = "0.5 0.5 -0.5 0.5 -2.55817 0 0 0 0 0 1 1 0 1 1";
+      surface = "0.5 -0.5 0.5 0.5 2.55817 0 0 0 0 0 1 1 0 1 1";
+   };
+   new Trigger(timerObjectiveTrigger) {
+      enterCommand = "startObjective(TimingObjective);";
+      dataBlock = "DefaultTrigger";
+      position = "8.14184 -33.0732 0.0459112";
+      scale = "4.54537 4.61042 1";
+         firstDataCheck = "1";
+   };
+};
+//--- OBJECT WRITE END ---
+

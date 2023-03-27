@@ -1,0 +1,282 @@
+function ObjectiveModule::createObjectiveManager(%this)
+{
+   //Objective (object,status) tracker
+   %this.Objectives = new arrayobject();
+   //Objective (item,amount) tracker
+   %this.items = new arrayobject();
+}
+
+function ObjectiveModule::initState(%this)
+{
+    ObjectiveModule.Objectives.add(mainObjective,"active");
+    %curObjective = ObjectiveModule.Objectives.count()-1;
+    ObjectiveModule.Objectives.setCurrent(%curObjective);    
+}
+
+// Invoked when the map is loaded. 
+// This initializes the ObjectiveManager as well as allowing
+// the Objective module to load any existing save data for objectives
+// and initialize to the previous session state
+function ObjectiveModule::onLoadMap(%this)
+{
+    %this.createObjectiveManager();
+    if (!%this.isMethod("onSaveLoaded"))
+        %this.initState();
+    Core_ClientServer.finishMapLoad();
+}
+
+// Utility function that allows easy callbacks for kicking off 'onStart' or 'onPause'
+// callback functions when an objective's state changes
+function doObjectiveCallback(%ObjectiveTag, %act)
+{
+    %script = %ObjectiveTag.getFieldValue("on" @ %act);
+    if(%ObjectiveTag.isMethod(%script))
+        %ObjectiveTag.call(%script);
+    callonModules("onObjective" @ %act,"Game",%ObjectiveTag);
+}
+
+//example: onObjective(exampleObjective)
+function onObjective(%ObjectiveTag)
+{
+    %ObjectiveID = ObjectiveModule.Objectives.getIndexFromKey(%ObjectiveTag);
+    return (ObjectiveModule.Objectives.getValue(%ObjectiveID) $= "active" || ObjectiveModule.Objectives.getValue(%ObjectiveID) $= "pause");
+}
+
+function isObjectiveActive(%ObjectiveTag)
+{
+    %ObjectiveID = ObjectiveModule.Objectives.getIndexFromKey(%ObjectiveTag);
+    return (ObjectiveModule.Objectives.getValue(%ObjectiveID) $= "active");
+}
+
+function ObjectiveStatus(%ObjectiveTag)
+{    
+    %ObjectiveID = ObjectiveModule.Objectives.getIndexFromKey(%ObjectiveTag);
+    return ObjectiveModule.Objectives.getValue(%ObjectiveID);
+}
+
+function isObjectiveAvailable(%ObjectiveTag)
+{
+    // Objective not available if youre on it
+    if (onObjective(%ObjectiveTag)) return false;
+    %ObjectiveID = ObjectiveModule.Objectives.getIndexFromKey(%ObjectiveTag);
+    
+    // Objective not available if you haven't completed a dependency
+    if (%ObjectiveID.preReqObjective !$= "")
+        if ((ObjectiveStatus(%ObjectiveID.preReqObjective) !$= "complete")) return false;
+        
+     // Objective not available if it's not repeatable and completed one way or the other
+    if (%ObjectiveID.repeatable == false)
+    {
+        if ((ObjectiveStatus(%ObjectiveTag) $= "complete")) return false;
+        if ((ObjectiveStatus(%ObjectiveTag) $= "failed")) return false;
+    }
+    return true;
+}
+
+//==============================================================================
+// These are the primary functions for managing quests in gameplay
+// They allow starting, pausing, resuming and cancelling objectives.
+// When the status of an objective or objectives changes, the clients are then
+// informed, so all clients are on the same page as the server
+//==============================================================================
+
+// This function starts an objective by a given name
+// If other objectives are active, they are paused.
+// If the objective is a type that has a set completion time, it's also initialized
+// here.
+// example: startObjective(exampleObjective)
+function startObjective(%ObjectiveTag)
+{
+    //Make sure the objective doesn't already exist in our set before we add it
+    //and mark it as active
+    //If it does already exist, it needs to be marked as a repeatable quest
+    //otherwise, we don't start it
+    %ObjectiveID = ObjectiveModule.Objectives.getIndexFromKey(%ObjectiveTag);
+    if (%ObjectiveID == -1)
+       ObjectiveModule.Objectives.add(%ObjectiveTag,"active");
+    else if (%ObjectiveTag.repeatable)
+       ObjectiveModule.Objectives.setValue("active",%ObjectiveID);
+    else
+       return;
+       
+    //If it's not a hidden objective, we'll want to pause whatever, if any, 
+    //active objective we currently having going on
+    if (%ObjectiveTag.hidden == false)   
+        pauseObjective(curObjective());
+    
+    ObjectiveModule.Objectives.setCurrent(ObjectiveModule.Objectives.getIndexFromKey(%ObjectiveTag));
+    doObjectiveCallback(%ObjectiveTag,Start);
+    if (%ObjectiveTag.timeToComplete >0)
+        ObjectiveModule.countdown[%ObjectiveTag] = schedule(%ObjectiveTag.timeToComplete*60000, ObjectiveModule, "failObjective", %ObjectiveTag);
+    ObjectiveStateChanged(); 
+}
+
+//example: pauseObjective(exampleObjective)
+function pauseObjective(%ObjectiveTag)
+{
+   //Make sure the objective passed in exists
+   %ObjectiveID = ObjectiveModule.Objectives.getIndexFromKey(%ObjectiveTag);    
+   if (%ObjectiveID == -1) 
+      return;
+      
+   //We want to make sure we only pause objective that are in a status that allows it
+   //if the objective is completed or failed, we don't wanna move their status out of that
+   %currentStatus = ObjectiveModule.Objectives.getValue(%ObjectiveID);
+   if(%currentStatus $= "complete" || %currentStatus $= "failed")
+      return;
+
+   ObjectiveModule.Objectives.setValue("pause",%ObjectiveID);
+   doObjectiveCallback(%ObjectiveTag,Pause);
+   ObjectiveStateChanged();
+}
+
+//example: resumeObjective(exampleObjective)
+function resumeObjective(%ObjectiveTag)
+{
+   //we don't want to resume an objective we already have as our current
+   if(curObjective() == %ObjectiveTag)
+      return; 
+      
+   //If the objective in question isn't actually in our list, just bail out
+   %ObjectiveID = ObjectiveModule.Objectives.getIndexFromKey(%ObjectiveTag);    
+   if (%ObjectiveID == -1) 
+      return;
+
+   //Can't resume an objective if it's complete or failed
+   %currentStatus = ObjectiveModule.Objectives.getValue(%ObjectiveID);
+   if(%currentStatus $= "complete" || %currentStatus $= "failed")
+      return; 
+
+   //Pause any existing objective we may have active
+   pauseObjective(curObjective());
+
+   ObjectiveModule.Objectives.setValue("active",%ObjectiveID);
+   doObjectiveCallback(%ObjectiveTag,Resume);        
+   ObjectiveModule.Objectives.setCurrent(%ObjectiveID);  
+   
+   //Process any associated scene groups for this objective
+   if(isObject(%ObjectiveTag.objectiveGroupName))
+      spawnObjects(%ObjectiveTag.objectiveGroupName);
+   if(isObject(%ObjectiveTag.objectivePermaGroupName)) 
+      spawnObjects(%ObjectiveTag.objectivePermaGroupName);  
+
+   ObjectiveStateChanged();
+}
+
+//example: completeObjective(exampleObjective)
+function completeObjective(%ObjectiveTag)
+{
+   //we can't complete a quest we don't have
+   %ObjectiveID = ObjectiveModule.Objectives.getIndexFromKey(%ObjectiveTag);
+   if (%ObjectiveID == -1) 
+      return;
+      
+   //Update it's status and end any timers
+   ObjectiveModule.Objectives.setValue("complete",%ObjectiveID);
+   cancel(ObjectiveModule.countdown[%ObjectiveTag]);
+
+   doObjectiveCallback(%ObjectiveTag,Complete);
+   
+   //Process any associated scene groups for this objective
+   if(isObject(%ObjectiveTag.objectiveGroupName))
+      deSpawnObjects(%ObjectiveTag.objectiveGroupName);
+   if(isObject(%ObjectiveTag.objectivePermaGroupName))   
+      spawnObjects(%ObjectiveTag.objectivePermaGroupName);  
+   if(isObject(%ObjectiveTag.objectiveCompleteGroupName)) 
+      spawnObjects(%ObjectiveTag.objectiveCompleteGroupName);
+
+   //find our last non-complete Objective
+   %found = false;
+   while ((ObjectiveModule.Objectives.getCurrent() >0) && (!%found))
+   {
+      ObjectiveModule.Objectives.movePrev(); //decrement current
+      if (!(ObjectiveModule.Objectives.getValue(ObjectiveModule.Objectives.getCurrent()) $= "complete"))
+      {
+         %found = true;
+      }
+   }
+   
+   //If the objective has a nextObjective to begin a chain, start that
+   //otherwise, resume the previous
+   if (%ObjectiveTag.nextObjective !$= "")
+   {
+      startObjective(%ObjectiveTag.nextObjective);
+   }
+   else
+   {
+      resumeObjective(curObjective());
+   }
+   ObjectiveStateChanged();
+}
+
+//example: failObjective(exampleObjective)
+function failObjective(%ObjectiveTag)
+{
+   //Can't fail an objective that doesn't exist
+   %ObjectiveID = ObjectiveModule.Objectives.getIndexFromKey(%ObjectiveTag);
+   if (%ObjectiveID == -1) 
+      return;
+   ObjectiveModule.Objectives.setValue("failed",%ObjectiveID);
+
+   doObjectiveCallback(%ObjectiveTag,Failed);
+
+   //Handle cleanup for associated spawns in the scene
+   if(isObject(%ObjectiveTag.objectiveGroupName)) 
+      deSpawnObjects(%ObjectiveTag.objectiveGroupName);
+
+   //find our last non-complete Objective
+   %found = false;
+   while ((ObjectiveModule.Objectives.getCurrent() >0) && (!%found))
+   {
+      ObjectiveModule.Objectives.movePrev(); //decrement current
+      if (!(ObjectiveModule.Objectives.getValue(ObjectiveModule.Objectives.getCurrent()) $= "complete"))
+      {
+         %found = true;
+      }
+   }
+
+   //If the objective has a failObjective to begin a chain, start that
+   //otherwise, resume the previous
+   if (%ObjectiveTag.failObjective !$= "")
+   {
+      startObjective(%ObjectiveTag.failObjective);
+   }
+   else
+   {
+      resumeObjective(curObjective());
+   }
+   ObjectiveStateChanged();
+}
+
+function curObjective()
+{
+    return ObjectiveModule.Objectives.getKey(ObjectiveModule.Objectives.getCurrent());
+}
+
+function ObjectiveStateChanged()
+{    
+	for (%clientIndex = 0; %clientIndex < ClientGroup.getCount(); %clientIndex++)
+	{
+		%cl = ClientGroup.getObject(%clientIndex);
+        updateObjectiveForClient(%cl);
+    }
+}
+
+//==============================================================================
+//module wide callback examples
+function ObjectiveModule::onObjectiveStart(%ObjectiveTag)
+{
+    //warn("Started" SPC %ObjectiveTag.name SPC "to get" SPC %ObjectiveTag.collectionCount SPC %ObjectiveTag.collectionItem SPC "within" SPC %ObjectiveTag.timeToComplete SPC "seconds");
+}
+function ObjectiveModule::onObjectivePause(%ObjectiveTag)
+{    
+    //warn("Objective::onObjectivePause placeholder sample");
+}
+function ObjectiveModule::onObjectiveResume(%ObjectiveTag)
+{
+    //warn("Objective::onObjectiveResume placeholder sample");    
+}
+function ObjectiveModule::onObjectiveComplete(%ObjectiveTag)
+{
+    //warn("Objective::onObjectiveComplete placeholder sample");    
+}
