@@ -47,10 +47,9 @@ Failing that it will attempt to go through the source inheritance chain to find 
 # Classes
 ## ObjectiveInfo
 ```
-new scriptobject()
+new scriptobject(<ObjectiveName>)
 {
     class= "ObjectiveInfo"; //namespace
-    name = ""; //Name of Objective. the object name
     displayName = ""; //Objective title
     description = ''; //Objective writeup
     locationMarker = ""; //.mis item associated with Objective
@@ -71,6 +70,10 @@ new scriptobject()
     onPause = ""; 
     onResume = ""; 
     onComplete = ""; 
+
+    objectiveGroupName = ""; //Name of the scene group this objective can use for holding objects when activated
+    objectivePermaGroupName = ""; //Name of the scene group this objective can use for holding persistant objects that stay in the map when this objective is activated, even after it is resolved.
+    objectiveCompleteGroupName = ""; //Name of the scene group this objective can use for holding objects that exist in the map once it is completed.
 };
 ```
 
@@ -91,15 +94,15 @@ ObjectiveManager::initState()
 ```     
 ObjectiveModule::onLoadMap()
 ```
-> Executed post map-load, used in conjunction with fileio onSaveLoaded module callback to load objective state
+> Executed post map-load as part of the core loader behavior via a callonmodules() callback, used in conjunction with fileio onSaveLoaded module callback to load objective state
     if it fails, uses initstate instead
     
 ## Objective module support 
 ```
 doObjectiveCallback(%ObjectiveTag, %act)
 ```
-> Generates callbacks of the form ObjectiveTag::on<State>()
-> also executes any generics via callOnModules module::onObjective<State>("ObjectiveTag")
+> Invokes callbacks of the form <%ObjectiveTag>::on<%act>()
+> also executes any generics via callOnModules <moduleName>::onObjective<%act>("ObjectiveTag")
 
 ```
 ObjectiveStateChanged()
@@ -120,7 +123,7 @@ isObjectiveActive(%ObjectiveTag)
 ```
 ObjectiveStatus(%ObjectiveTag)
 ```
-> Polls the $ObjectiveManager.Objectives array for the state of a Objective
+> Polls the ObjectiveModule.Objectives array for the state of a Objective
 > current list: active, pause, complete, failed
 
 ```
@@ -212,7 +215,7 @@ GuiInspectorGroup::buildObjectiveListField(%this, %fieldName, %fieldLabel, %fiel
 ```
 Objective::insertSaveData(%this)
 ```
-> saves off the $ObjectiveManager.Objectives arrayobject in the form (Objective, status) under the <Objective> subsection
+> saves off the ObjectiveModule.Objectives arrayobject in the form (Objective, status) under the <Objective> subsection
 
 ```
 Objective::parseSaveData(%this)
@@ -229,13 +232,13 @@ Objective::onSaveLoaded(%this)
 ```
 Objective::onSetInventory(%playerInst, %itemData, %currentAmount)
 ```
-> hooks into the inventory module to sync tracking of Objective-relevant items to $ObjectiveManager.items
+> hooks into the inventory module to sync tracking of Objective-relevant items to ObjectiveModule.items
 > completes an Objectives who's .collectionCount >= %currentAmount, including paused ones
 
 ```
 Objective::onClearInventory(%playerInst)
 ```
-> also resets the $ObjectiveManager.items
+> also resets the ObjectiveModule.items
 
 ```
 ObjectiveModule::onLoadMap()

@@ -133,10 +133,6 @@ function pauseObjective(%ObjectiveTag)
 //example: resumeObjective(exampleObjective)
 function resumeObjective(%ObjectiveTag)
 {
-   //we don't want to resume an objective we already have as our current
-   if(curObjective() == %ObjectiveTag)
-      return; 
-      
    //If the objective in question isn't actually in our list, just bail out
    %ObjectiveID = ObjectiveModule.Objectives.getIndexFromKey(%ObjectiveTag);    
    if (%ObjectiveID == -1) 
