@@ -14,16 +14,20 @@ function updateObjectiveForClient(%cl,%includeComplete)
    commandToClient(%cl,'clearObjectiveTracker');
    
    %count = ObjectiveModule.Objectives.count();
-   for (%i=0; %i<%count; %i++)
+   for (%i=0; %i<=%count; %i++)
    {
       //Get the status and the objectiveDef from our list
       %status = ObjectiveModule.Objectives.getValue(%i);
       %Objective = ObjectiveModule.Objectives.getKey(%i);
       
       //If we don't have a valid objective, skip this entriy
+      if(%Objective.hidden)
+         continue;
+         
+      //If we don't have a valid objective, skip this entriy
       if(!isObject(%Objective))
          continue;
-
+         
       //If the client has indicated they don't want to include completed objectives
       //then skip any with that status
       if (!%includeComplete && (%status $= "complete"))
@@ -47,6 +51,10 @@ function updateObjectiveForClient(%cl,%includeComplete)
       commandToClient(%cl, 'appendObjectiveTracker', %Objective.Name, %ObjectiveDesc, addTaggedString(%status), addTaggedString(%Objective.ExtendedDescriptionFile));
    }
    
+   //If we don't have a valid objective, skip this entriy
+   if(%Objective.hidden)
+      return;
+      
    //If the current objective has a timer tracker, make sure to tell the client status of it
    //so they can display in as needed. 
    //If there's no such timeToComplete, inform them with a 0 value so they can hide the element

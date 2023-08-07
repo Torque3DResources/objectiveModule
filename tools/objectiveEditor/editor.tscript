@@ -37,6 +37,7 @@ function ObjectiveEditorPlugin::onWorldEditorStartup( %this )
    if(!%alreadyExists)
    {
       %pluginCommand = "Canvas.pushDialog(ObjectiveEditorGUI);";
+      EditorsMenuList.add(%ObjectiveEditorName TAB "" TAB %pluginCommand);
       %windowMenu.addItem( %count, %ObjectiveEditorName TAB "" TAB %pluginCommand);
    }
 }

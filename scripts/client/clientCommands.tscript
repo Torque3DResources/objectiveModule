@@ -55,7 +55,7 @@ function clientCMDclearObjectiveTracker()
 //of objectives, ensuring multiplayer stability
 function clientCMDappendObjectiveTracker(%objectiveName, %description, %status, %extendedDescFile)
 {
-   ClientObjectiveList.add(%objectiveName, %status TAB %description TAB %extendedDescFile);
+   ClientObjectiveList.add(%objectiveName, deTag(%status) TAB %description TAB deTag(%extendedDescFile));
 
    //now that we have a sttaus update for the objectives on the tracker,
    //inform our GUIs to update display
