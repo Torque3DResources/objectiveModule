@@ -1,6 +1,10 @@
+$ObjectiveTrackerGUI::registeredColor = "0000FF";
+$ObjectiveTrackerGUI::activeColor = "00FF00";
+$ObjectiveTrackerGUI::failedColor = "FF0000";
+
 function ObjectiveTrackerGUI::onWake(%this)
 {   
-    //requestObjectives();
+    commandToServer('getObjectives');
 }
 
 function clientCMDupdateObjectiveClock(%time)
@@ -33,12 +37,12 @@ function ObjectiveTrackerGUI::refresh(%this)
             
       //We'll color code the text on the tracker by the quest's status so it's
       //easier to see at a glance where everything is at
-      %colorcode = "<color:0000FF>";
+      %colorcode = "<color:" @ $ObjectiveTrackerGUI::registeredColor @ ">";
 
       if (detag(%ObjectiveStatus) $= "active")
-         %colorcode = "<color:00FF00>";
+         %colorcode = "<color:" @ $ObjectiveTrackerGUI::activeColor @ ">";
       if (detag(%ObjectiveStatus) $= "failed")
-         %colorcode = "<color:FF0000>";
+         %colorcode = "<color:" @ $ObjectiveTrackerGUI::failedColor @ ">";
       
       //append each quest's description and a new line so it formats correctly for display
       %ObjectiveTrackerText = %ObjectiveTrackerText @ %colorcode @ %ObjectiveDescription @"\n";
