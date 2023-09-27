@@ -65,7 +65,7 @@ function isObjectiveAvailable(%ObjectiveTag)
         if ((ObjectiveStatus(%ObjectiveID.preReqObjective) !$= "complete")) return false;
         
      // Objective not available if it's not repeatable and completed one way or the other
-    if (%ObjectiveID.repeatable == false)
+    if (%ObjectiveTag.repeatable == false)
     {
         if ((ObjectiveStatus(%ObjectiveTag) $= "complete")) return false;
         if ((ObjectiveStatus(%ObjectiveTag) $= "failed")) return false;
