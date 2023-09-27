@@ -121,7 +121,7 @@ function pauseObjective(%ObjectiveTag)
       
    //We want to make sure we only pause objective that are in a status that allows it
    //if the objective is completed or failed, we don't wanna move their status out of that
-   %currentStatus = ObjectiveModule.Objectives.getValue(%ObjectiveID);
+   %currentStatus = ObjectiveStatus(%ObjectiveTag);
    if(%currentStatus $= "complete" || %currentStatus $= "failed")
       return;
 
@@ -139,7 +139,7 @@ function resumeObjective(%ObjectiveTag)
       return;
 
    //Can't resume an objective if it's complete or failed
-   %currentStatus = ObjectiveModule.Objectives.getValue(%ObjectiveID);
+   %currentStatus = ObjectiveStatus(%ObjectiveTag);
    if(%currentStatus $= "complete" || %currentStatus $= "failed")
       return; 
 

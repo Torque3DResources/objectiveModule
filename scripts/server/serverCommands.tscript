@@ -94,3 +94,18 @@ function serverCMDCycleObjective(%cl)
         
     resumeObjective(curObjective());
 }
+
+function serverCMDGetObjectiveDetails(%client, %objectiveName)
+{
+   %foundObjective = "";
+   for (%i=0; %i < ObjectiveModule.Objectives.count(); %i++)
+   {
+      %objective = ObjectiveModule.Objectives.getKey(%i);
+      
+      if(%objective.name $= %objectiveName)
+      {
+         commandToClient(%client, 'GetObjectiveDetailsResults', %objective.displayName, %objective.description, %objective.extendedDescriptionFile);
+         return;
+      }
+   }
+}

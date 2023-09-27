@@ -44,5 +44,8 @@ function inventorySystem::onObjectiveStart(%this,%ObjectiveTag)
         %cl = ClientGroup.getObject(%clientIndex);
         %currentAmount += %cl.player.getInventory(%ObjectiveTag.collectionItem);
     }
-    ObjectiveModule.items.add(%ObjectiveTag.collectionItem.getName(),%currentAmount);
+    
+    //Only fuss with the collectionItem if we have one defined
+    if(isObject(%ObjectiveTag.collectionItem))
+    	ObjectiveModule.items.add(%ObjectiveTag.collectionItem.getName(),%currentAmount);
 }
