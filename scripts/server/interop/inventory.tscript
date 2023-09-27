@@ -23,10 +23,9 @@ function ObjectiveModule::onSetInventory(%this, %playerInst, %itemData, %current
 	         for (%clientIndex = 0; %clientIndex < ClientGroup.getCount(); %clientIndex++)
 	         {
 		         %cl = ClientGroup.getObject(%clientIndex);
-               updateObjectiveForClient(%cl);
-            }
-            
-            if (%currentAmount >= %ObjectiveTag.collectionCount)
+                  updateObjectiveForClient(%cl);
+             }            
+             if (%currentAmount >= %ObjectiveTag.collectionCount)
                 completeObjective(%ObjectiveTag);
         }
     }
@@ -35,4 +34,18 @@ function ObjectiveModule::onSetInventory(%this, %playerInst, %itemData, %current
 function ObjectiveModule::onClearInventory(%this,%playerInst)
 {
     %this.items.empty();
+}
+
+function inventorySystem::onObjectiveStart(%this,%ObjectiveTag)
+{
+    %currentAmount = 0;
+    for (%clientIndex = 0; %clientIndex < ClientGroup.getCount(); %clientIndex++)
+    {
+        %cl = ClientGroup.getObject(%clientIndex);
+        %currentAmount += %cl.player.getInventory(%ObjectiveTag.collectionItem);
+    }
+    
+    //Only fuss with the collectionItem if we have one defined
+    if(isObject(%ObjectiveTag.collectionItem))
+    	ObjectiveModule.items.add(%ObjectiveTag.collectionItem.getName(),%currentAmount);
 }
