@@ -32,6 +32,15 @@ function ObjectiveTrackerGUI::refresh(%this)
       %ObjectiveDescription = getField(%ObjectiveData, 1);
       %ObjectiveExtendedDescFile = getField(%ObjectiveData, 2);
       
+      //re-format description if there's an item count associated
+      if(getTokenCount(%ObjectiveDescription, ":") > 1)
+      {
+         %displayName = getToken(%ObjectiveDescription, ":", 0);
+         %itemTracking = getToken(%ObjectiveDescription, ":", 1); 
+         
+         %ObjectiveDescription = %displayName @ ": " @ %itemTracking;
+      }
+      
       if (detag(%ObjectiveStatus) $= "complete")
             continue;
             
