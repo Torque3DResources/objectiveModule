@@ -35,23 +35,21 @@ function doObjectiveCallback(%ObjectiveTag, %act)
     callonModules("onObjective" @ %act,"Game",%ObjectiveTag);
 }
 
-//example: onObjective(exampleObjective)
-function onObjective(%ObjectiveTag)
-{
-    %ObjectiveID = ObjectiveModule.Objectives.getIndexFromKey(%ObjectiveTag);
-    return (ObjectiveModule.Objectives.getValue(%ObjectiveID) $= "active" || ObjectiveModule.Objectives.getValue(%ObjectiveID) $= "pause");
+function ObjectiveStatus(%ObjectiveTag)
+{    
+    return ObjectiveModule.Objectives.getValueFromKey(%ObjectiveTag);
 }
 
 function isObjectiveActive(%ObjectiveTag)
 {
-    %ObjectiveID = ObjectiveModule.Objectives.getIndexFromKey(%ObjectiveTag);
-    return (ObjectiveModule.Objectives.getValue(%ObjectiveID) $= "active");
+    return (ObjectiveStatus(%ObjectiveTag) $= "active");
 }
 
-function ObjectiveStatus(%ObjectiveTag)
-{    
-    %ObjectiveID = ObjectiveModule.Objectives.getIndexFromKey(%ObjectiveTag);
-    return ObjectiveModule.Objectives.getValue(%ObjectiveID);
+//example: onObjective(exampleObjective)
+function onObjective(%ObjectiveTag)
+{
+    %ObjectiveState = ObjectiveStatus(%ObjectiveTag);
+    return (%ObjectiveState $= "active" || %ObjectiveState $= "pause");
 }
 
 function isObjectiveAvailable(%ObjectiveTag)
