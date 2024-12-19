@@ -387,7 +387,7 @@ new Scene(ObjectiveTestLevel) {
       canSaveDynamicFields = "0";
    };
    new Trigger() {
-      TripCondition = "isObjectiveAvailable(ItemCollectObjective)";
+      tripIf = "isObjectiveAvailable(ItemCollectObjective)";
       enterCommand = "startObjective(ItemCollectObjective);";
       dataBlock = "DefaultTrigger";
       position = "-7.70638 -23.097 -1.34211";
