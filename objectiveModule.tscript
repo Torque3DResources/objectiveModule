@@ -38,12 +38,7 @@ function ObjectiveModule::onDestroyGameServer(%this)
 function ObjectiveModule::initClient(%this)
 {
    //Here, we exec out keybind scripts so the player is able to move when they get into a game
-   %this.queueExec("./scripts/client/default.keybinds." @ $TorqueScriptFileExtension);
-   
-   %prefPath = getPrefpath();
-   if(isFile(%prefPath @ "/keybinds." @ $TorqueScriptFileExtension))
-      exec(%prefPath @ "/keybinds." @ $TorqueScriptFileExtension);
-      
+   %this.queueExec("./scripts/client/default.keybinds." @ $TorqueScriptFileExtension);      
    %this.queueExec("./scripts/profiles");
    %this.queueExec("./guis/ObjectiveTrackerGUI.gui");
    %this.queueExec("./guis/ObjectiveTrackerGUI");
